@@ -1,0 +1,21 @@
+Executable : /Users/wang/Library/Android/sdk/ndk/21.3.6528147/ndk-build
+arguments : 
+NDK_PROJECT_PATH=null
+APP_BUILD_SCRIPT=/Users/wang/oh/ha/asample/libuvccamera/uvc-core/jni/Android.mk
+NDK_APPLICATION_MK=/Users/wang/oh/ha/asample/libuvccamera/uvc-core/jni/Application.mk
+APP_ABI=armeabi-v7a
+NDK_ALL_ABIS=armeabi-v7a
+NDK_DEBUG=0
+APP_PLATFORM=android-22
+NDK_OUT=/Users/wang/oh/ha/asample/libuvccamera/build/intermediates/ndkBuild/release/obj
+NDK_LIBS_OUT=/Users/wang/oh/ha/asample/libuvccamera/build/intermediates/ndkBuild/release/lib
+NDK_APPLICATION_MK=uvc-core/jni/Application.mk
+APP_PLATFORM=android-22
+NDK_PROJECT_PATH=uvc-core
+APP_SHORT_COMMANDS=false
+LOCAL_SHORT_COMMANDS=false
+-B
+-n
+jvmArgs : 
+
+Build command args:

@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
@@ -11,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.serenegiant.common.BaseActivity;
 import com.serenegiant.usb.CameraDialog;
 import com.serenegiant.usb.IButtonCallback;
 import com.serenegiant.usb.IFrameCallback;
@@ -21,7 +21,7 @@ import com.serenegiant.usb.UVCCamera;
 
 import java.nio.ByteBuffer;
 
-public class MainActivity extends BaseActivity implements CameraDialog.CameraDialogParent {
+public class MainActivity extends AppCompatActivity implements CameraDialog.CameraDialogParent {
 
     private final Object mSync = new Object();
     // for accessing USB and USB camera
@@ -113,7 +113,7 @@ public class MainActivity extends BaseActivity implements CameraDialog.CameraDia
         @Override
         public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
             releaseCamera();
-            queueEvent(new Runnable() {
+            new Runnable() {
                 @Override
                 public void run() {
                     final UVCCamera camera = new UVCCamera();
@@ -190,7 +190,7 @@ public class MainActivity extends BaseActivity implements CameraDialog.CameraDia
                         mUVCCamera = camera;
                     }
                 }
-            }, 0);
+            }.run();
         }
 
         @Override
@@ -229,27 +229,6 @@ public class MainActivity extends BaseActivity implements CameraDialog.CameraDia
         }
     }
 
-    /**
-     * to access from CameraDialog
-     * @return
-     */
-    @Override
-    public USBMonitor getUSBMonitor() {
-        return mUSBMonitor;
-    }
-
-    @Override
-    public void onDialogResult(boolean canceled) {
-        if (canceled) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // FIXME
-                }
-            }, 0);
-        }
-    }
-
     // if you need frame data as byte array on Java side, you can use this callback method with UVCCamera#setFrameCallback
     // if you need to create Bitmap in IFrameCallback, please refer following snippet.
     final Bitmap bitmap = Bitmap.createBitmap(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, Bitmap.Config.RGB_565);
@@ -281,4 +260,14 @@ public class MainActivity extends BaseActivity implements CameraDialog.CameraDia
             }
         }
     };
+
+    @Override
+    public USBMonitor getUSBMonitor() {
+        return mUSBMonitor;
+    }
+
+    @Override
+    public void onDialogResult(boolean canceled) {
+
+    }
 }

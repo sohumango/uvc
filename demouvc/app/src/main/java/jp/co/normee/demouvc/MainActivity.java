@@ -104,6 +104,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onAttach(final UsbDevice device) {
             Log.d("USB", "USB_DEVICE_ATTACHED");
+            synchronized (mSync) {
+                if (mUVCCamera == null) {
+                    List<UsbDevice> usbCams = mUSBMonitor.getDeviceList(mFilter.get(0));
+                    if(usbCams.size()>0){
+                        UsbDevice item = usbCams.get(0);
+                        if (item instanceof UsbDevice) {
+                            mUSBMonitor.requestPermission((UsbDevice)item);
+                        }
+                    }
+                } else {
+                    releaseCamera();
+                }
+            }
         }
 
         @Override

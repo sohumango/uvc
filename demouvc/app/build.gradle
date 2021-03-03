@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "jp.co.normee.demouvc"
         minSdkVersion 22
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
 
@@ -24,7 +24,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'com.android.support:appcompat-v7:27.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:support-annotations:27.0.0'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation project(':libuvccamera')

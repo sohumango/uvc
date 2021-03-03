@@ -1,0 +1,4 @@
+include ':app'
+include ':libuvccamera'
+project(':libuvccamera').projectDir = new File(settingsDir, '../libuvccamera')
+rootProject.name = "demouvc"

@@ -10,38 +10,35 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.serenegiant.usb.CameraDialog;
-import com.serenegiant.usb.IButtonCallback;
+import com.serenegiant.usb.DeviceFilter;
 import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.IStatusCallback;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements CameraDialog.CameraDialogParent {
+public class MainActivity extends AppCompatActivity {
 
     private final Object mSync = new Object();
     // for accessing USB and USB camera
     private USBMonitor mUSBMonitor;
     private UVCCamera mUVCCamera;
     private SimpleUVCCameraTextureView mUVCCameraView;
-    // for open&start / stop&close camera preview
-    private ImageButton mCameraButton;
-    private Surface mPreviewSurface;
 
+    private Surface mPreviewSurface;
+    private List<DeviceFilter> mFilter;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mCameraButton = (ImageButton)findViewById(R.id.camera_button);
+        ImageButton mCameraButton = (ImageButton)findViewById(R.id.camera_button);
+        mFilter= DeviceFilter.getDeviceFilters(this, com.serenegiant.uvccamera.R.xml.device_filter);
         mCameraButton.setOnClickListener(mOnClickListener);
-
-        mUVCCameraView = (SimpleUVCCameraTextureView)findViewById(R.id.UVCCameraTextureView1);
+        mUVCCameraView = (SimpleUVCCameraTextureView) findViewById(R.id.UVCCameraTextureView1);
         mUVCCameraView.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float)UVCCamera.DEFAULT_PREVIEW_HEIGHT);
-
         mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
     }
 
@@ -75,17 +72,12 @@ public class MainActivity extends AppCompatActivity implements CameraDialog.Came
         Log.d("USB", "onDestroy: ");
         synchronized (mSync) {
             releaseCamera();
-            if (mToast != null) {
-                mToast.cancel();
-                mToast = null;
-            }
             if (mUSBMonitor != null) {
                 mUSBMonitor.destroy();
                 mUSBMonitor = null;
             }
         }
         mUVCCameraView = null;
-        mCameraButton = null;
         super.onDestroy();
     }
 
@@ -94,7 +86,13 @@ public class MainActivity extends AppCompatActivity implements CameraDialog.Came
         public void onClick(final View view) {
             synchronized (mSync) {
                 if (mUVCCamera == null) {
-                    CameraDialog.showDialog(jp.co.normee.demouvc.MainActivity.this);
+                    List<UsbDevice> usbCams = mUSBMonitor.getDeviceList(mFilter.get(0));
+                    if(usbCams.size()>0){
+                        UsbDevice item = usbCams.get(0);
+                        if (item instanceof UsbDevice) {
+                            mUSBMonitor.requestPermission((UsbDevice)item);
+                        }
+                    }
                 } else {
                     releaseCamera();
                 }
@@ -102,12 +100,10 @@ public class MainActivity extends AppCompatActivity implements CameraDialog.Came
         }
     };
 
-    private Toast mToast;
-
     private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
         @Override
         public void onAttach(final UsbDevice device) {
-            Toast.makeText(jp.co.normee.demouvc.MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
+            Log.d("USB", "USB_DEVICE_ATTACHED");
         }
 
         @Override
@@ -122,43 +118,12 @@ public class MainActivity extends AppCompatActivity implements CameraDialog.Came
                         @Override
                         public void onStatus(final int statusClass, final int event, final int selector,
                                              final int statusAttribute, final ByteBuffer data) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    final Toast toast = Toast.makeText(jp.co.normee.demouvc.MainActivity.this, "onStatus(statusClass=" + statusClass
-                                            + "; " +
-                                            "event=" + event + "; " +
-                                            "selector=" + selector + "; " +
-                                            "statusAttribute=" + statusAttribute + "; " +
-                                            "data=...)", Toast.LENGTH_SHORT);
-                                    synchronized (mSync) {
-                                        if (mToast != null) {
-                                            mToast.cancel();
-                                        }
-                                        toast.show();
-                                        mToast = toast;
-                                    }
-                                }
-                            });
-                        }
-                    });
-                    camera.setButtonCallback(new IButtonCallback() {
-                        @Override
-                        public void onButton(final int button, final int state) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    final Toast toast = Toast.makeText(jp.co.normee.demouvc.MainActivity.this, "onButton(button=" + button + "; " +
-                                            "state=" + state + ")", Toast.LENGTH_SHORT);
-                                    synchronized (mSync) {
-                                        if (mToast != null) {
-                                            mToast.cancel();
-                                        }
-                                        mToast = toast;
-                                        toast.show();
-                                    }
-                                }
-                            });
+                            Log.d("USB", "onStatus(statusClass=" + statusClass
+                                    + "; " +
+                                    "event=" + event + "; " +
+                                    "selector=" + selector + "; " +
+                                    "statusAttribute=" + statusAttribute + "; " +
+                                    "data=...)");
                         }
                     });
 //					camera.setPreviewTexture(camera.getSurfaceTexture());
@@ -201,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements CameraDialog.Came
 
         @Override
         public void onDettach(final UsbDevice device) {
-            Toast.makeText(jp.co.normee.demouvc.MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
+            Log.d("USB", "USB_DEVICE_DETACHED");
         }
 
         @Override
@@ -260,14 +225,4 @@ public class MainActivity extends AppCompatActivity implements CameraDialog.Came
             }
         }
     };
-
-    @Override
-    public USBMonitor getUSBMonitor() {
-        return mUSBMonitor;
-    }
-
-    @Override
-    public void onDialogResult(boolean canceled) {
-
-    }
 }

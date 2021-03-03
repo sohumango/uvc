@@ -26,10 +26,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 public class MessageDialogFragmentV4 extends DialogFragmentEx {
@@ -86,7 +86,7 @@ public class MessageDialogFragmentV4 extends DialogFragmentEx {
         final MessageDialogFragmentV4 dialog
                 = newInstance(requestCode, id_title, id_message, permissions);
         dialog.setTargetFragment(parent, parent.getId());
-        dialog.show(parent.requireFragmentManager(), TAG);
+        dialog.show(parent.getFragmentManager(), TAG);
         return dialog;
     }
 
@@ -161,11 +161,11 @@ public class MessageDialogFragmentV4 extends DialogFragmentEx {
     @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        final Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
+        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         final int id_title = args.getInt(ARGS_KEY_ID_TITLE);
         final int id_message = args.getInt(ARGS_KEY_ID_MESSAGE);
 
-        final Activity activity = requireActivity();
+        final Activity activity = getActivity();
         return new AlertDialog.Builder(activity)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle(id_title)
@@ -198,7 +198,7 @@ public class MessageDialogFragmentV4 extends DialogFragmentEx {
     private void callOnMessageDialogResult(final boolean result)
             throws IllegalStateException {
 
-        final Bundle args = requireArguments();
+        final Bundle args = getArguments();
         final int requestCode = args.getInt(ARGS_KEY_REQUEST_CODE);
         final String[] permissions = args.getStringArray(ARGS_KEY_PERMISSIONS);
         try {

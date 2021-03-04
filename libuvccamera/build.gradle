@@ -22,8 +22,6 @@ apply plugin: 'com.android.library'
  *  may have a different license, see the respective files.
  */
 
-import org.apache.tools.ant.taskdefs.condition.Os
-
 android {
 	compileSdkVersion 27
 
@@ -33,7 +31,7 @@ android {
 	}
 
     defaultConfig {
-        minSdkVersion 22
+        minSdkVersion 23
 		targetSdkVersion 23
 
 		externalNativeBuild {
@@ -57,13 +55,10 @@ android {
 	}
 }
 android {
-	lintOptions {
-		abortOnError false
-	}
+	ndkVersion '21.3.6528147'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: '*.jar')
-	implementation 'com.android.support:appcompat-v7:23.0.1'
 	implementation 'com.android.support:support-annotations:23.0.1'
 }

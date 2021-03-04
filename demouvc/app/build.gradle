@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "jp.co.normee.demouvc"
-        minSdkVersion 22
-        targetSdkVersion 24
+        minSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
 

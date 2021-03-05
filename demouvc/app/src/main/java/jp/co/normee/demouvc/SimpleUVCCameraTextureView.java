@@ -90,6 +90,8 @@ class SimpleUVCCameraTextureView extends TextureView	// API >= 14
         super(context, attrs, defStyle);
         mFilter= DeviceFilter.getDeviceFilters(context, com.serenegiant.uvccamera.R.xml.device_filter);
         mUSBMonitor = new USBMonitor(context, mOnDeviceConnectListener);
+        mUSBMonitor.setDeviceFilter(mFilter);
+        Log.d("uvc", "SimpleUVCCameraTextureView: " + mUSBMonitor.getDeviceCount());
     }
 
     @Override
